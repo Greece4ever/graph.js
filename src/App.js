@@ -3,7 +3,7 @@ import InputFunction from "./comps";
 import katex from 'katex';
 import './katex.css';
 
-function print(...args) {
+export function print(...args) {
   return console.log(...args);
 }
 
@@ -90,9 +90,10 @@ function App() {
     ctx.strokeStyle = ctx.fillStyle = "yellow"
     let y = func(point[0]);
     ctx.arc(...toPixels(point[0],y),3,0,360)
-    ctx.fill();    
-    ctx.font = "10px KaTeX_AMS"
-    ctx.fillText(`y = ${y}`,point[0],y-20);
+    ctx.fill();  
+    ctx.font = "10px KaTeX_Main";
+    ctx.fillStyle = "white"
+    ctx.fillText(`y = ${y.toFixed(3)}`,...toPixels(point[0],y+.4));
 
   }
   
@@ -107,7 +108,7 @@ function App() {
     switch(repr) {
       case 2:
         arrow(...toPixels(point[0],func(point[0])),
-        ...toPixels(point[0]+0.001,func(point[0]+0.001)))
+        ...toPixels(point[0]+2,func(point[0]+2)))
         break;
       case 0:
         dotpoint();
@@ -225,7 +226,9 @@ function App() {
           return setZoom(prev => prev + 1)
         }
         HandleZoom(e);
-        // setTextShift(-.4 / 40 * (40+40-zoom));
+        const can = canvas.current;
+        let [nX,nY] = [e.pageX-can.offsetLeft,e.pageY - can.offsetTop];
+        ctx.translate(nX - mDown.x,nY-mDown.y);
         switch(true){
           case zoom >= 40:
             setNumShift(1);
@@ -239,9 +242,9 @@ function App() {
       }}  
       onKeyDown={(e) => {
         if(e.key.toLowerCase() === 'd') {
-          return setZoom(prev => prev  - 10);
+          return setZoom(prev => prev  - 40);
         } else if(e.key.toLowerCase() === 'a'){
-          return setZoom(prev => prev + 10);
+          return setZoom(prev => prev + 40);
         }
       }}
       onMouseDown={(e) => {

@@ -1,6 +1,7 @@
 import React from 'react';
 import {showCaretPos} from "./ce";
 import katex from 'katex';
+import {print} from "./App"
 
 
 const InputFunction = (props) => {
