@@ -35,7 +35,7 @@ const normalCrossSettings = {
 
 const normalGridSettings = {
     "lineWidth" : 1,
-    "strokeStyle": "rgba(50, 51, 52, 1)",
+    "strokeStyle": "#333435",
     "shadowBlur": 0,
     "shadowColor": "white",
     "fillStyle" : "white",

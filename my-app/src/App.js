@@ -13,18 +13,22 @@ function random_alot() {
 
 
 function App() {
+  const [a, setA] = useState(2);
   const [functions, setFunctions] = useState([
     [(x) => 0.2*x**2 , "rgb(212, 116, 112)"],
+    // [(x) => Math.sin(a*x) , "rgb(52, 152, 235)"],
   ])
 
+
+
   useEffect(() => {
-    let data = [];
-    for (let i=1; i < 2; i++)
-    {
-      data.push( [(x) => Math.sin(x), randomColor() ] )
-    }
-    setFunctions(prev => data)
-  }, [])
+    let interval = setInterval(() => {
+      setA(prev => prev + 0.1);
+    }, 50)
+
+    return () => clearInterval(interval);
+  })
+
 
   const [points, setPoints] = useState([
     [ random_alot(), { "circleBorder" : "auto", "circle" : "auto", "line" : "white" } ]

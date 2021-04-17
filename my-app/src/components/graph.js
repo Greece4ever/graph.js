@@ -16,7 +16,7 @@ const Graph = (props) => {
     const [increment, setIncrement] = useState(2);
     const [pixelUnitSize, setPixelUnitSize] = useState(100);
     const [add, setAdd] = useState(0);
-
+    const [mpos, setMpos] = useState(new Vector(0, 0));
     
 
     const applyContextSettings = (settings) => {  for (let setting in settings)  {  ctx[setting] = settings[setting]; }  }
@@ -38,6 +38,18 @@ const Graph = (props) => {
     const getBoundsX = () => [  toCartesianX( 0 ) ,  toCartesianX( size.x )  ]; 
     const getBoundsY = () => [  toCartesianY( 0 ) ,  toCartesianY( size.y )  ]; 
 
+    useEffect(() => {
+        if (mouseDownPoint)
+        {
+
+            let [x, y] = [toCartesianX(mpos.x), toCartesianY(mpos.y)]
+
+            let func = props.functions[0];
+
+            setMouseDownFunction(func);
+            setMouseDownPoint(  new Vector(mpos.x, toPixelsY( func[0](x) )) )
+        }
+    }, [props.functions])
 
     useEffect(() => {
         if (!ctx)
@@ -53,7 +65,7 @@ const Graph = (props) => {
         drawPointForFunction();
         drawText(x_bounds, y_bounds);    
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ctx, center, increment, add, mouseDownPoint, mouseDownFunction])
+    }, [ctx, center, increment, add, mouseDownPoint, mouseDownFunction, props.functions])
 
 
     // how to find the numbers in a sequence before and after a number
@@ -156,7 +168,6 @@ const Graph = (props) => {
             ctx.moveTo(toPixelsX(x_cords.start), toPixelsY(f(x_cords.start)))
                 for (let x=x_cords.start; x < x_cords.end; x += inc)
                 {
-                    let f_x = f(x);
                     let [x_, y_] = [toPixelsX(x), toPixelsY( f(x) )]
                     ctx.lineTo(x_, y_ )
                 }
@@ -277,10 +288,38 @@ const Graph = (props) => {
         ctx.fill();        
         ctx.closePath();
 
+
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(230, 237, 26, 0.2)"
+        let inc = Math.abs(toCartesianX(size.x) - toCartesianX(0)) / 1000;
+        ctx.moveTo(toPixels(0), mouseDownPoint.y);
+
+        let end = toCartesianX(mouseDownPoint.x);
+
+        let cond = end >= 0 ? (x, mouse_point) => {return x < mouse_point} : (x, mouse_point) => {return x > mouse_point};
+        inc = end >= 0 ? inc : -1 * inc;
+
+        // console.log(cond(0, ) )
+        
+        for (x=0; cond(x, end); x += inc)
+        {
+            ctx.lineTo( toPixelsX(x), toPixelsY(mouseDownFunction[0](x)) )
+        }
+        
+
+        ctx.lineTo( toPixelsX(x), toPixelsY(0) )
+        ctx.lineTo( toPixelsX(0), toPixelsY(0) )
+
+
+        ctx.fill();
+        // ctx.stroke();
+        ctx.closePath();
+
     }
 
     const handleMouseMove = (e) => {
         let pos2 = getMousePos(e);
+        setMpos(pos2);
         
         if (mouseDownFunction)
         {
@@ -319,7 +358,7 @@ const Graph = (props) => {
         }
 
             let unit = Math.abs(toPixelsX(increment)- toPixelsX(0));
-            if (unit <= 55 || unit >= 120)
+            if (unit <= 58 || unit >= 120)
             {
                 let unit_dist = Math.abs(toPixelsX(2) - toPixelsX(1));
                 setIncrement(pixelUnitSize / unit_dist );
