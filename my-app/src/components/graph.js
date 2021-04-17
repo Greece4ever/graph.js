@@ -131,10 +131,10 @@ const Graph = (props) => {
             applyContextSettings( props.crossSettings ?? settings.grid);
             let boundsX = getBoundsX();
             let boundsY = getBoundsY();
-
+            ctx.strokeStyle = "#8f9192";
 
             let _x = {"start" : prev(boundsX[0]), "end" :  next(boundsX[1]) } 
-            let _y = {"start" : prev(boundsY[0]), "end" :  prev(boundsY[1]) } 
+            let _y = {"start" : next(boundsY[0]), "end" :  prev(boundsY[1]) } 
 
             for (let x= _x.start; x <= _x.end; x += increment )
             {
@@ -152,6 +152,27 @@ const Graph = (props) => {
             }
             ctx.stroke();
         ctx.closePath();
+
+        ctx.beginPath();
+        ctx.strokeStyle = "#333435";
+        for (let x= _x.start; x <= _x.end; x += increment /4)
+        {
+            let x_level = toPixelsX(x);
+            ctx.moveTo(x_level, 0);
+            ctx.lineTo(x_level, size.y);                    
+        }
+
+
+        for (let y=_y.start; y >= _y.end; y -= increment /4)
+        {
+            let y_level = toPixelsY(y);
+            ctx.moveTo(0, y_level);
+            ctx.lineTo(size.x, y_level);            
+        }
+
+        ctx.stroke();
+        ctx.closePath();
+
 
         return [_x, _y];
     }
