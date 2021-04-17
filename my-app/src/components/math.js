@@ -12,20 +12,23 @@ export class Vector
     }
 }
 
+function generateRandomNumber(min, max) {
+    return Math.random() * (max - min) + min;
+};
 
-function createGradient(ctx) {
-    let grd = ctx.createLinearGradient(0, 0, 200, 0);
-      grd.addColorStop(0, "rgba(19, 118, 138, 1)");
-      grd.addColorStop(1, "rgba(50, 98, 168)");
-      grd.addColorStop(0, "rgba(19, 62, 89, 1)");
-    return grd;
+
+export const randomColor = () => 
+{
+    let arr = [Math.random() * 255, Math.random() * 255, Math.random() * 255]
+    let alpha = generateRandomNumber(0.5, 1.0);
+    return `rgba(${ arr.join(",") + "," + alpha })`
 }
+
 
 
 const normalCrossSettings = {
     "lineWidth" : 2,
-    "strokeStyle": "rgb(156, 158, 161)",
-    "strokeColor": "rgb(220, 218, 220)",
+    "strokeStyle": "#7a7b7b",
     "shadowBlur": 0,
     "shadowColor": "white"
 }
@@ -33,7 +36,6 @@ const normalCrossSettings = {
 const normalGridSettings = {
     "lineWidth" : 1,
     "strokeStyle": "rgba(50, 51, 52, 1)",
-    "strokeColor": "white",
     "shadowBlur": 0,
     "shadowColor": "white",
     "fillStyle" : "white",

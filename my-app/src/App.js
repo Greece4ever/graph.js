@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Graph from './components/graph'
+import {randomColor} from './components/math'
 
 function random_alot() {
   let arr =[];
@@ -10,18 +11,29 @@ function random_alot() {
   return arr;
 }
 
+
 function App() {
   const [functions, setFunctions] = useState([
-    [(x) => Math.sin(x), "rgb(212, 116, 112)"],
+    [(x) => 0.2*x**2 , "rgb(212, 116, 112)"],
   ])
+
+  useEffect(() => {
+    let data = [];
+    for (let i=1; i < 2; i++)
+    {
+      data.push( [(x) => Math.sin(x), randomColor() ] )
+    }
+    setFunctions(prev => data)
+  }, [])
 
   const [points, setPoints] = useState([
     [ random_alot(), { "circleBorder" : "auto", "circle" : "auto", "line" : "white" } ]
   ]);
 
+
   return (
     <div className="App">
-      <Graph points={points} functions={functions} width={800} height={600} />
+      <Graph points={points} functions={functions} width={1024} height={768} />
       
     </div>
   );
