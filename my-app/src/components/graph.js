@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {Vector, settings, getMousePos } from './math'
 
-const Graph = (props) => {
+const Plot2D = (props) => {
     const canvas = useRef(null);
     const [ctx, setCtx] = useState(null);
     const [offset, setOffset] = useState( new Vector(0, 0) );
@@ -17,6 +17,7 @@ const Graph = (props) => {
     const [pixelUnitSize, setPixelUnitSize] = useState(100);
     const [add, setAdd] = useState(0);
     const [mpos, setMpos] = useState(new Vector(0, 0));
+    const [cursor, setCursor] = useState("auto");
     
 
     const applyContextSettings = (settings) => {  for (let setting in settings)  {  ctx[setting] = settings[setting]; }  }
@@ -33,8 +34,6 @@ const Graph = (props) => {
     useEffect(() => setCenter(new Vector(size.x / 2 + offset.x, size.y / 2 + offset.y)), [size, offset, zoom]);
     
     // get cartesian at start and end of screen
-    // const getBoundsX = () => [ Math.floor( toCartesianX( 0 ) ),  Math.ceil(  toCartesianX( size.x ) )  ]; 
-    // const getBoundsY = () => [ Math.floor( toCartesianY( 0 ) ),  Math.ceil(  toCartesianY( size.y ) )  ]; 
     const getBoundsX = () => [  toCartesianX( 0 ) ,  toCartesianX( size.x )  ]; 
     const getBoundsY = () => [  toCartesianY( 0 ) ,  toCartesianY( size.y )  ]; 
 
@@ -43,7 +42,6 @@ const Graph = (props) => {
         {
 
             let [x, y] = [toCartesianX(mpos.x), toCartesianY(mpos.y)]
-
             let func = props.functions[0];
 
             setMouseDownFunction(func);
@@ -59,9 +57,10 @@ const Graph = (props) => {
         
         let [x_bounds, y_bounds] = 
         drawGrid();
+        
         drawCrosses();
         drawFunction(x_bounds);
-        // drawPoints();
+        drawPoints();
         drawPointForFunction();
         drawText(x_bounds, y_bounds);    
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,7 +89,7 @@ const Graph = (props) => {
         let font_size = Number(ctx.font.split(" ")[0].split("px")[0] );
 
         ctx.beginPath();
-        applyContextSettings(settings.text);
+        applyContextSettings(props.canvasStyle.text ?? settings.text);
 
             let posX = toPixelsY(0) + font_size;
         
@@ -120,18 +119,17 @@ const Graph = (props) => {
             ctx.stroke();
             ctx.fill();
         ctx.closePath();    
-
-
-
     }
 
 
     const drawGrid = () => {
+        // Grid thatn has numbers
         ctx.beginPath();
-            applyContextSettings( props.crossSettings ?? settings.grid);
+            applyContextSettings( props.canvasStyle.gridSettings ?? settings.grid);
+            ctx.lineWidth = 2; // no matter what
+
             let boundsX = getBoundsX();
             let boundsY = getBoundsY();
-            ctx.strokeStyle = "#8f9192";
 
             let _x = {"start" : prev(boundsX[0]), "end" :  next(boundsX[1]) } 
             let _y = {"start" : next(boundsY[0]), "end" :  prev(boundsY[1]) } 
@@ -153,27 +151,29 @@ const Graph = (props) => {
             ctx.stroke();
         ctx.closePath();
 
+        // Grid without numbers (greyer)
         ctx.beginPath();
-        ctx.strokeStyle = "#333435";
-        for (let x= _x.start; x <= _x.end; x += increment /4)
-        {
-            let x_level = toPixelsX(x);
-            ctx.moveTo(x_level, 0);
-            ctx.lineTo(x_level, size.y);                    
-        }
+            applyContextSettings( props.canvasStyle.outerGrid ?? settings.outer_grid );
+            
+            ctx.lineWidth = 1; // no matter what
+
+            for (let x= _x.start; x <= _x.end; x += increment /4)
+            {
+                let x_level = toPixelsX(x);
+                ctx.moveTo(x_level, 0);
+                ctx.lineTo(x_level, size.y);                    
+            }
 
 
-        for (let y=_y.start; y >= _y.end; y -= increment /4)
-        {
-            let y_level = toPixelsY(y);
-            ctx.moveTo(0, y_level);
-            ctx.lineTo(size.x, y_level);            
-        }
+            for (let y=_y.start; y >= _y.end; y -= increment /4)
+            {
+                let y_level = toPixelsY(y);
+                ctx.moveTo(0, y_level);
+                ctx.lineTo(size.x, y_level);            
+            }
 
-        ctx.stroke();
+            ctx.stroke();
         ctx.closePath();
-
-
         return [_x, _y];
     }
 
@@ -182,6 +182,7 @@ const Graph = (props) => {
         applyContextSettings(settings.function)
         let inc = Math.abs(toCartesianX(size.x) - toCartesianX(0)) / 1000;
         props.functions.forEach(_ => {
+            
             let f  = _[0];
             let color = _[1];
             ctx.strokeStyle = color;
@@ -192,7 +193,6 @@ const Graph = (props) => {
                     let [x_, y_] = [toPixelsX(x), toPixelsY( f(x) )]
                     ctx.lineTo(x_, y_ )
                 }
-
         
             ctx.stroke();
             ctx.closePath();    
@@ -243,12 +243,15 @@ const Graph = (props) => {
         })
     }
 
-
+    const derivative = (f, x, h=0.0001) => {
+        return (f(x + h) - f(x)) / h
+    } 
 
     const drawCrosses = () =>
     {
         ctx.beginPath();
-            applyContextSettings( props.axis_settings ?? settings.axis);       
+            applyContextSettings( props.canvasStyle.axis ?? settings.axis);  
+            // ctx.strokeStyle = "red"     
                 ctx.moveTo( center.x, 0 );
                 ctx.lineTo( center.x, size.y );
                 
@@ -265,22 +268,17 @@ const Graph = (props) => {
         let font_size = Number(ctx.font.split(" ")[0].split("px")[0] );
 
         ctx.beginPath();
-        ctx.setLineDash([2, 3]);
-        ctx.strokeStyle = "grey"
-            ctx.moveTo(mouseDownPoint.x, center.y);
-            ctx.lineTo(mouseDownPoint.x, mouseDownPoint.y);
+            ctx.setLineDash([2, 3]);
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = "grey"
+                ctx.moveTo(mouseDownPoint.x, center.y);
+                ctx.lineTo(mouseDownPoint.x, mouseDownPoint.y);
 
-            ctx.moveTo(center.x, mouseDownPoint.y);
-            ctx.lineTo(mouseDownPoint.x, mouseDownPoint.y);
-            
-
-
-
-            
-            //                 ctx.fillText(  x_str, x_level,   posX );
-            ctx.stroke();
-            ctx.fill();
-
+                ctx.moveTo(center.x, mouseDownPoint.y);
+                ctx.lineTo(mouseDownPoint.x, mouseDownPoint.y);
+                            
+                ctx.stroke();
+                ctx.fill();
         ctx.closePath();
 
         ctx.beginPath();
@@ -288,10 +286,9 @@ const Graph = (props) => {
         ctx.fillStyle = "white"
 
         let x = toCartesianX(mouseDownPoint.x);
-        let y = toCartesianX(mouseDownPoint.y);
+        let y = toCartesianY(mouseDownPoint.y);
 
         let text = `(${x.toFixed(2)}, ${y.toFixed(2)})`
-
 
         ctx.strokeText(text, mouseDownPoint.x + font_size, mouseDownPoint.y + font_size);
         ctx.fillText(text, mouseDownPoint.x + font_size, mouseDownPoint.y + font_size);
@@ -300,8 +297,6 @@ const Graph = (props) => {
 
         ctx.beginPath();
         ctx.setLineDash([]);
-        let r = (toPixelsX(2) - toPixelsX(1)) * 0.2;
-
             ctx.strokeStyle = mouseDownFunction[1];
             ctx.fillStyle = "white";
                 ctx.arc( mouseDownPoint.x, mouseDownPoint.y, 5, 0, 360);
@@ -311,30 +306,30 @@ const Graph = (props) => {
 
 
         ctx.beginPath();
-        ctx.fillStyle = "rgba(230, 237, 26, 0.2)"
-        let inc = Math.abs(toCartesianX(size.x) - toCartesianX(0)) / 1000;
-        ctx.moveTo(toPixels(0), mouseDownPoint.y);
+            ctx.fillStyle = "rgba(230, 237, 26, 0.2)"
+            let inc = Math.abs(toCartesianX(size.x) - toCartesianX(0)) / 1000;
+            ctx.moveTo(toPixels(0), mouseDownPoint.y);
 
-        let end = toCartesianX(mouseDownPoint.x);
+            let end = toCartesianX(mouseDownPoint.x);
 
-        let cond = end >= 0 ? (x, mouse_point) => {return x < mouse_point} : (x, mouse_point) => {return x > mouse_point};
-        inc = end >= 0 ? inc : -1 * inc;
+            let cond = end >= 0 ? (x, mouse_point) => {return x < mouse_point} : (x, mouse_point) => {return x > mouse_point};
+            inc = end >= 0 ? inc : -1 * inc;
 
-        // console.log(cond(0, ) )
-        
-        for (x=0; cond(x, end); x += inc)
-        {
-            ctx.lineTo( toPixelsX(x), toPixelsY(mouseDownFunction[0](x)) )
-        }
-        
+            
+            for (x=0; cond(x, end); x += inc)
+            {
+                ctx.lineTo( toPixelsX(x), toPixelsY(mouseDownFunction[0](x)) )
+            }
+            
 
-        ctx.lineTo( toPixelsX(x), toPixelsY(0) )
-        ctx.lineTo( toPixelsX(0), toPixelsY(0) )
+            ctx.lineTo( toPixelsX(x), toPixelsY(0) )
+            ctx.lineTo( toPixelsX(0), toPixelsY(0) )
 
 
-        ctx.fill();
-        // ctx.stroke();
+            ctx.fill();
         ctx.closePath();
+
+        
 
     }
 
@@ -365,57 +360,99 @@ const Graph = (props) => {
         ));
     }
 
+    const zoomIntoCursor = (event, delta) => {
+        let mouse_pos = getMousePos(event);
+        setZoom(prev_zoom => {
+            let new_zoom = Math.max(prev_zoom + delta, 1);
+
+            let prev_cmposX = (mouse_pos.x - center.x) / prev_zoom;
+            let prev_cmposY = (mouse_pos.y - center.y) / prev_zoom;
+
+            let cmposX = (mouse_pos.x - center.x) / new_zoom;
+            let cmposY = (mouse_pos.y - center.y) / new_zoom;
+
+
+            let deltaX = prev_cmposX - cmposX;
+            let deltaY = prev_cmposY - cmposY;
+
+            // 1 Cartesian unit to pixels (length)
+            let pixelX = Math.abs( (center.x + 2 * new_zoom) - (center.x + 1 * new_zoom) );
+            let pixelY = Math.abs( (center.y - 2 * new_zoom) - (center.y - 1 * new_zoom) );
+
+
+            setOffset(prev => new Vector( prev.x - deltaX * pixelX, prev.y - deltaY * pixelY ) );
+            return new_zoom;
+        })
+    }
 
     const handleWheel = (e) => {
         if (e.deltaY < 0)
+            zoomIntoCursor(e,  1);
+        else 
+            zoomIntoCursor(e, -1);
+
+
+        let unit = Math.abs(toPixelsX(increment)- toPixelsX(0));
+        if (unit <= 58 || unit >= 120)
         {
-            setZoom(prev => prev + 1);
+            let unit_dist = Math.abs(toPixelsX(2) - toPixelsX(1));
+            setIncrement(pixelUnitSize / unit_dist );
         }
-        else {
-            setZoom(prev => {
-                let res = prev - 1;
-                return res <= 0 ? 1 : res;
-            });
-        }
-
-            let unit = Math.abs(toPixelsX(increment)- toPixelsX(0));
-            if (unit <= 58 || unit >= 120)
-            {
-                let unit_dist = Math.abs(toPixelsX(2) - toPixelsX(1));
-                setIncrement(pixelUnitSize / unit_dist );
-            }
-
-
     }
 
     const handleClick = (e) => {
         e.preventDefault();
+        if (!props.functions || !props.functions.length || mouseDown)
+            return 
+
         let pos = getMousePos(e);
+        let [x, y] = [toCartesianX(pos.x), toCartesianY(pos.y)]
+
+        let min_dist = Math.abs( y -  props.functions[0][0](x) ); 
+        let min_func;
+
         props.functions.forEach(func => {
-            let [x, y] = [toCartesianX(pos.x), toCartesianY(pos.y)]
-            setMouseDownFunction( func );
-            setMouseDownPoint(  new Vector(pos.x, toPixelsY(y)) )
+            let dist = Math.abs( y -  func[0](x));
+            if (dist <= min_dist) {
+                min_dist = dist;
+                min_func = func;
+            }
         })
 
+        setMouseDownFunction( min_func );
+        setMouseDownPoint(  new Vector(pos.x, toPixelsY( min_func[0](x) ) ) )
     }
 
     return (
-        <div>
-            <canvas style={{"border" : "1px solid green"}}
-                onMouseDown={(e) => { setMouseDown(  { "mpos": getMousePos(e), "offset": offset } );} }
-                onMouseUp={  (e) => {setMouseDown(null); setMouseDownFunction(null); setMouseDownPoint(null) }  } 
-                onMouseMove={(e) => handleMouseMove(e)}
-                onMouseLeave={() => setMouseDown(null)}
-                onWheel={(e) => handleWheel(e) }
-                onContextMenu={(e) => handleClick(e) }
-                
+        <canvas style={ {...props.htmlStyle, "cursor" : cursor, "background" : (props.htmlStyle ? props.htmlStyle.background : null) ?? "#181a1b"} }
+            onMouseDown={(e) => { 
+                if (mouseDownFunction)
+                    return;
 
-                width={props.width} 
-                height={props.height}
-                ref={canvas}
-            ></canvas>
-        </div>
+                if (e.button !== 2)
+                {
+                    setCursor("all-scroll");
+                    setMouseDown(  { "mpos": getMousePos(e), "offset": offset } ); 
+                }
+            } 
+            
+            }
+            onMouseUp={  (e) => {setMouseDown(null); setMouseDownFunction(null); setMouseDownPoint(null); setCursor("auto") }  } 
+            onMouseMove={(e) => handleMouseMove(e)}
+            onMouseLeave={() => {
+                setMouseDown(null);
+                setCursor("auto");
+
+            }}
+            onWheel={(e) => handleWheel(e) }
+            onContextMenu={(e) => handleClick(e) }
+            
+
+            width={props.width} 
+            height={props.height}
+            ref={canvas}
+        ></canvas>
     )
 }
 
-export default Graph;
+export default Plot2D;

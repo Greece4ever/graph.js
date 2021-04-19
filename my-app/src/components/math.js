@@ -28,16 +28,13 @@ export const randomColor = () =>
 
 const normalCrossSettings = {
     "lineWidth" : 2,
-    "strokeStyle": "#7a7b7b",
-    "shadowBlur": 0,
-    "shadowColor": "white"
+    "strokeStyle": "#878a91",
+    "shadowBlur" : 0,
 }
 
 const normalGridSettings = {
-    "lineWidth" : 1,
-    "strokeStyle": "#333435",
-    "shadowBlur": 0,
-    "shadowColor": "white",
+    "lineWidth" : 2,
+    "strokeStyle": "#8f9192",
     "fillStyle" : "white",
     "font" : "13px sans-serif"
 }
@@ -45,18 +42,21 @@ const normalGridSettings = {
 const normalFunctionSettings = {
     "lineWidth" : 2,
     "strokeStyle": "rgb(237, 52, 52)",
-    "strokeColor": "white",
-    "shadowBlur": 0,
-    "shadowColor": "white",
+    // "shadowBlur" : 30,
+    shadowColor: "white"
+    
 }
 
 const normalTextSettings = {
     "lineWidth" : 2,
     "strokeStyle": "black",
     "fillStyle": "white",
-    "strokeColor": "white",
-    "shadowBlur": 0,
-    "shadowColor": "white",
+    "shadowBlur" : 0,
+}
+
+const normalOuterGrid = {
+    "lineWidth" : 1,
+    "strokeStyle": "#333435",
 }
 
 
@@ -68,6 +68,7 @@ export const getMousePos = (event) =>
 
 export const settings = {
     "grid" : normalGridSettings,
+    "outer_grid": normalOuterGrid,
     "axis": normalCrossSettings,
     "function" : normalFunctionSettings,
     "text": normalTextSettings
