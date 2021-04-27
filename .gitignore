@@ -12,6 +12,7 @@
 /src/build
 /src/dist
 /src/public
+/src/example
 
 # misc
 .DS_Store
