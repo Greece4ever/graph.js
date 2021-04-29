@@ -34,16 +34,14 @@ function App() {
   }} >
     <div style={{float : 'left', width: "20%", height: "100vh"}}>
       <div className="parent" style={{
-        // "overflow": "auto",
-        overflowX: "hidden",
         width: "100%", 
         height: "100%",
         background: "#181a1b",
         padding: "0 !important",
         margin:  "0 !important",
         border: "1px solid rgba(33, 32, 31, 0.1)",
-        display: "grid",
-        gridTemplateRows: "5%"
+  
+        
         }}>
 
         <div style={{
@@ -73,7 +71,7 @@ function App() {
 
         </div>
 
-        <div style={{width: "100%", height: "100%", overflow: "auto"}}
+        <div style={{width: "100%", height: "calc(100% - 48px)", overflow: "auto"}}
         >
           {functions.map( 
             (func, index) => <InputFunction functions={functions} setFunctions={setFunctions} index={index} />

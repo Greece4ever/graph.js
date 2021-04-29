@@ -40,6 +40,10 @@ canvas { display:block; }
   padding:0;
   box-sizing: border-box;
 
+  /* firefox */
+  scrollbar-color: #888 #2e2c2c;
+  scrollbar-width: thin;
+
 }
 
 .blured
@@ -84,3 +88,5 @@ canvas { display:block; }
 ::-webkit-scrollbar-thumb:hover {
   background: #555; 
 }
+
+
