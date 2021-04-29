@@ -20,6 +20,8 @@ export const __plot_2d = (props) => {
     const [cursor, setCursor] = useState("auto");
     const [canvasStyle, setCanvasStyle] = useState({});
 
+    const [selectedIndex, setSelectedIndex] = useState(null);
+
     const applyContextSettings = (settings) => {  for (let setting in settings)  {  ctx[setting] = settings[setting]; }  }
     const clear = () => ctx.clearRect(0, 0, canvas.current.width, canvas.current.height);
     const toPixelsX = x => center.x + x * zoom;
@@ -30,7 +32,7 @@ export const __plot_2d = (props) => {
     const toPixels = (x, y) => new Vector( toPixelsX(x), toPixelsY(y) );
 
     useEffect(() => setCtx(canvas.current.getContext("2d")), [canvas])
-    useEffect(() => setSize(new Vector(canvas.current.width, canvas.current.height)), [ctx])
+    useEffect(() => setSize(new Vector(canvas.current.width, canvas.current.height)), [ctx, props.width, props.height])
     useEffect(() => setCenter(new Vector(size.x / 2 + offset.x, size.y / 2 + offset.y)), [size, offset, zoom]);
     
     // get cartesian at start and end of screen
@@ -183,26 +185,31 @@ export const __plot_2d = (props) => {
         return [_x, _y];
     }
 
+    const graphFunction = (_, x_cords, inc) => {
+        let f  = _[0];
+        let color = _[1];
+        ctx.strokeStyle = color;
+        ctx.moveTo(toPixelsX(x_cords.start), toPixelsY(f(x_cords.start)))
+            for (let x=x_cords.start; x < x_cords.end; x += inc)
+            {
+                let [x_, y_] = [toPixelsX(x), toPixelsY( f(x) )]
+                ctx.lineTo(x_, y_ )
+            }
+    
+        ctx.stroke();
+    }
+
 
     const drawFunction = (x_cords) => {
         if (!props.functions)
             return;
         applyContextSettings(canvasStyle.function ?? settings.function)
         let inc = Math.abs(toCartesianX(size.x) - toCartesianX(0)) / 1000;
-        props.functions.forEach(_ => {
-            let f  = _[0];
-            let color = _[1];
-            ctx.strokeStyle = color;
-            ctx.beginPath();
-            ctx.moveTo(toPixelsX(x_cords.start), toPixelsY(f(x_cords.start)))
-                for (let x=x_cords.start; x < x_cords.end; x += inc)
-                {
-                    let [x_, y_] = [toPixelsX(x), toPixelsY( f(x) )]
-                    ctx.lineTo(x_, y_ )
-                }
-        
-            ctx.stroke();
-            ctx.closePath();    
+
+        props.functions.forEach(_ => {   
+            ctx.beginPath();             
+                graphFunction(_, x_cords, inc);
+            ctx.closePath();
         })
     }
 
@@ -416,18 +423,24 @@ export const __plot_2d = (props) => {
         let [x, y] = [toCartesianX(pos.x), toCartesianY(pos.y)]
 
         let min_dist = Math.abs( y -  props.functions[0][0](x) ); 
-        let min_func;
+        let min_func = props.functions[0];
+        let index = 0;
 
+        let i = 0;
         props.functions.forEach(func => {
             let dist = Math.abs( y -  func[0](x));
             if (dist <= min_dist) {
                 min_dist = dist;
                 min_func = func;
+                index = i;
             }
+            i++;
         })
+
 
         setMouseDownFunction( min_func );
         setMouseDownPoint(  new Vector(pos.x, toPixelsY( min_func[0](x) ) ) )
+        setSelectedIndex(index);
     }
 
     return (
