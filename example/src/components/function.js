@@ -23,8 +23,17 @@ const InputFunction = (props) => {
     const [color, setColor] = useState(color_grey);
     const [functionColor, setFunctionColor] = useState(randomColor());
     const [field, setField] = useState(null);
+    const [reload, setReload] = useState(null);
 
     const math_input = useRef();
+
+
+    const handleNewFunction = () => {
+        // console.log(props.index, props.length)
+        if (props.index + 1 !== props.length)
+            return;
+        props.setFunctions(prev => [...prev, [ x => NaN, "red" ] ]);
+    }
 
     useEffect(() => {
         if (!math_input.current)
@@ -35,6 +44,7 @@ const InputFunction = (props) => {
             virtualKeyboardLayout: 'dvorak',
             onFocus: () => {
                 setColor(color_blue);
+                setReload(Math.random());
             },
             onContentDidChange: (mf) => {
                 setMathExpr( mf.getValue('ascii-math')
@@ -49,19 +59,26 @@ const InputFunction = (props) => {
 
     }, [math_input])
 
+    useEffect(() => {
+        if (!reload)
+            return;
 
+        props.setSelected(props.index);
+        handleNewFunction();
+    }, [reload]);
 
     useEffect(() => {
         try {
-            console.log("func -> " , math_expr  )
+            // console.log("func -> " , math_expr  )
             let func = evaluate( math_expr, scope  );
             if (typeof func != "function")
                 return;
             try { 
-                console.log("--> ", func(3.1415))
+                console.log("--> ", func(-3.1415))
+                console.log("--> ", func(Math.PI))
                 props.setFunctions(prev => {
                     let prev_ = prev.slice();
-                    console.log("set");
+                    // console.log("set");
                     prev_[props.index] = [func, functionColor];
                     return prev_;
                 })
@@ -80,6 +97,7 @@ const InputFunction = (props) => {
         }}
 
         onBlur={ () => {
+            props.setSelected(null);
             setColor(color_grey);   
         }}
         
