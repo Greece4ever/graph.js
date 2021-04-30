@@ -22,7 +22,7 @@ html, body {
 
   /* padding-bottom: 20px; */
  
-  /* overflow: hidden; */
+  overflow: hidden;
   /* vertical-align: bottom; */
 
 }
@@ -89,4 +89,38 @@ canvas { display:block; }
   background: #555; 
 }
 
+@keyframes spin {
+  from {transform:rotate(0deg);}
+  to {transform:rotate(360deg);}
+}
 
+
+
+.shadow
+{
+  animation: spin 8s linear infinite;
+  box-shadow: rgba(24, 26, 27, 0.8) 0px 0px 10px 2px, rgba(0, 0, 0, 0.8) 0px 0px 10px 2px !important;
+}
+
+.shadow:hover
+{
+  opacity: 0.9;
+}
+
+.black
+{
+  background : rgb(24, 26, 27) !important; 
+}
+
+.muted {
+  color: #4e4e4e;
+  font-weight: 100;
+  /* font-size: 20px; */
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  }
+  

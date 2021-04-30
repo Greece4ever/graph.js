@@ -1,8 +1,7 @@
 import React, {useEffect, useState, useRef} from 'react'
 import { addStyles, EditableMathField } from 'react-mathquill'
 import MathLive from 'mathlive';
-import {evaluate} from 'mathjs';
-
+import {evaluate, exp} from 'mathjs';
 
 const color_blue = "#2c5a84";
 const color_grey = "rgb(33 33 33)";
@@ -13,6 +12,30 @@ const randomColor = () => {
     return `rgba(${nums.join(", ")})`;
 }
 
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+/**
+ * Returns a random integer between min (inclusive) and max (inclusive).
+ * The value is no lower than min (or the next integer greater than min
+ * if min isn't an integer) and no greater than max (or the next integer
+ * lower than max if max isn't an integer).
+ * Using Math.round() will give you a non-uniform distribution!
+ */
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
+const randomBrightColor = () => {
+    return `hsl(${getRandomInt(0, 360)}, ${getRandomInt(45, 56)}%, ${getRandomInt(57, 100)}%)`
+    // `hsl(360, 56%, 57%)`  // 0-360 20-56 57-100
+}
+
+
 const allowed_keys = Array.from("0123456789()x+-/*()")
 
 let scope = {'ln': Math.log}
@@ -21,7 +44,7 @@ let scope = {'ln': Math.log}
 const InputFunction = (props) => {
     const [math_expr, setMathExpr] = useState("");
     const [color, setColor] = useState(color_grey);
-    const [functionColor, setFunctionColor] = useState(randomColor());
+    const [functionColor, setFunctionColor] = useState(randomBrightColor());
     const [field, setField] = useState(null);
     const [reload, setReload] = useState(null);
 
@@ -69,8 +92,12 @@ const InputFunction = (props) => {
 
     useEffect(() => {
         try {
-            // console.log("func -> " , math_expr  )
-            let func = evaluate( math_expr, scope  );
+
+            let expr = math_expr;
+            if (!expr.includes("=") )
+                expr = `f(x)=${expr}`;
+
+            let func = evaluate( expr, scope  );
             if (typeof func != "function")
                 return;
             try { 
