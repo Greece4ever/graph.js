@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SliderPicker, HuePicker, SketchPicker } from 'react-color'
 import Slider from '@material-ui/core/Slider';
 import Select from '@material-ui/core/Select';
@@ -22,6 +22,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { makeStyles } from '@material-ui/core/styles';
+import { deepClone2D } from "./default_settings";
 
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -32,7 +33,17 @@ function capitalizeFirstLetter(string) {
 export const ColorSelect = (props) => {
     const [color, setColor] = useColor("hex", "#121212");
     const [open, setOpen] = useState(false);
-  //   return <ColorPicker width={props.width} height={props.height} color={color} onChange={setColor} hideHSV dark />;
+
+
+    useEffect(() => {
+        props.setNewSettings(prev => {
+            let clone = deepClone2D(prev);
+            clone[props.name][props.property] = color.hex;
+            return clone;
+        })
+    }, [color])
+
+
     return (
     <div>
         <Button onClick={e => setOpen(true)} style={{"background": "#3f51b5"}}>
@@ -93,7 +104,6 @@ export const ColorSelect = (props) => {
                     <ColorPicker width={props.width} height={props.height} color={color} 
                         
                         onChange={e => {
-                            // console.log(e)
                             setColor(e);
                         }}
                         
@@ -120,13 +130,33 @@ export const ColorSelect = (props) => {
 };
 
 
-export const RangeSetting = () =>
+export const RangeSetting = (props) =>
 {
-    const [color, setColor] = useState("white");
+    const [value, setValue] = useState();
 
     return (
         <div>
-            <Slider />
+            <Slider 
+            valueLabelFormat={value}
+            aria-labelledby="discrete-slider-restrict"
+            valueLabelDisplay="auto"
+
+            value={props.unAppliedSettings[props.name][props.property]}
+
+            min={props.range[0]}
+            max={props.range[1]}
+
+            onChange={ (e, value) => {
+                props.setNewSettings(prev => {
+                    let clone = deepClone2D(prev);
+                    
+        
+                    clone[props.name][props.property] = value;
+                    return clone;
+                })        
+            }}
+
+            />
         </div>
     )
 }
@@ -145,52 +175,37 @@ const useStyles = makeStyles((theme) => ({
 
 export const SelectSetting = (props) => 
 {
-    const [value, setValue] = useState("");
     const classes = useStyles();
 
-    const handleChange = e => setValue(e.target.value);
+    const handleChange = e => {
+        props.setNewSettings(prev => {
+            let clone = deepClone2D(prev);
+            clone[props.name][props.property] = e.target.value;
+            return clone;
+        })
+    }
 
     return (
         <FormControl style={{"background": "#181a1b"}}  className={classes.formControl}>
         <InputLabel style={{
             "color": "rgb(63, 81, 181)"
-        }} id="demo-simple-select-label">{props.name}</InputLabel>
+        }} id="demo-simple-select-label">{props.setting_name}</InputLabel>
             <Select
 
             labelId="demo-simple-select-label"
             id="demo-simple-select"
-            value={value}
-            onChange={handleChange}
+            value={props.unAppliedSettings[props.name][props.property]}
+            onChange={e => handleChange(e)}
             >
 
             {props.values.map(i => 
                 <MenuItem style={{
                     "background": "#181a1b",
-                    color: "white"
+                    color: "#3d4eae"
                 }} value={i}>{capitalizeFirstLetter(i)}</MenuItem>
             )}
 
             </Select>
       </FormControl>
-
-
-        
-        // <FormControl>
-        //         <InputLabel id="demo-simple-select-label">Age</InputLabel>
-
-        //     <Select
-        //     native
-        //     value={value}
-        //     onChange={e => {
-        //         setValue(e.target.value)
-        //     }}
-        // >
-        //     <option aria-label="None" value="" />
-            // {props.values.map(i => 
-            //     <MenuItem value={i}>{i}</MenuItem>
-            // )}
-        // </Select>
-
-        // </FormControl>
     )
 }

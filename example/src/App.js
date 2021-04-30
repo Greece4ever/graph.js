@@ -1,32 +1,27 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import {Graph2D} from 'graph2d.js'
+
 import InputFunction from './components/function'
 import { Resizable } from "re-resizable";
 
-import Settings from './components/settings'
+import Settings from './components/settings/settings'
 import "./App.css"
 
+import {createDefaultSettings, settings_prototype} from './components/settings/default_settings';
 
-const settings_prototype = [
-  {"name": "Line Width"			, "description": "Width of lines"		, "type": "range", "range": [1, 4]					},
-  {"name": "Shadow Blur"		, "description": "Specifies the blurring effect."		, "type": "range", "range": [0, 50] 						},
-  {"name": "Line Color"			, "description": "Color or style to use for the lines around shapes"		, "type": "color" 					},
-  {"name": "Shadow Color"		, "description": "Color of the shadow. Default: fully-transparent black"		, "type": "color" 						},
-  {"name": "Shadow offset X", "description": "Horizontal distance the shadow will be offset"		, "type": "range", "range": [0, 50] 								},
-  {"name": "Shadow offset Y", "description": "Vertical distance the shadow will be offset"		, "type": "range", "range": [0, 50] 								},
-  {"name": "Line Cap"				, "description": "Type of endings on the end of lines. Possible values: butt (default), round, square"		, "type": "select", "options": ["butt", "round", "square"] 				},
-  {"name": "Line Join"			, "description": "Defines the type of corners where two lines meet. Possible values: round, bevel, miter (default)"		, "type": "select", "options": ["round", "bevel", "miter"] 					},
 
-  
-]
+
+
 
 let settings = [
-  {"name" : "Functions"          },
-  {"name" : "Axes"               },
-  {"name":  "Grid 0"             },
-  {"name" : "Grid 1"             }
+  {"name" : "Functions"   , "property": "function"       },
+  {"name" : "Axes"        , "property": "axis"       },
+  {"name":  "Grid"        , "property": "grid"     },
+  {"name" : "Smaller Grid", "property": "outer_grid"             }
 ]
 
+
+// const default_settings = createDefaultSettings(settings_prototype)
 
 
 function App() {
@@ -36,6 +31,12 @@ function App() {
   const [length, setLength] = useState(0);
 
   const [layerWidth, setLayerWidth] = useState(0);
+
+  const [currentSettings, setCurrentSettings] = useState( createDefaultSettings(settings_prototype) );
+
+  const [unAppliedSettings, setUnApliedSettings] = useState(  createDefaultSettings(settings_prototype)   )
+
+
   
   useEffect(() => {
     const width  = window.innerWidth;
@@ -151,14 +152,16 @@ function App() {
 
 
     <div style={{float: 'none', overflow: "hidden", background: "red" }}>
-      <Graph2D canvasStyle={{
-          function: {lineWidth: 4}
-          
-          } } functions={functions} width={size[0]} height={size[1]} />
+      <Graph2D canvasStyle={currentSettings} functions={functions} width={size[0]} height={size[1]} />
 
     </div>
 
-    <Settings settings={settings} settings_prototype={settings_prototype} />
+    <Settings 
+    
+    setCurrentSettings={setCurrentSettings}
+    currentSettings={currentSettings}
+
+    unAppliedSettings={unAppliedSettings} setUnApliedSettings={setUnApliedSettings} settings={settings} settings_prototype={settings_prototype} />
 
     </div>
   )

@@ -15,6 +15,8 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
+import {createDefaultSettings, settings_prototype} from './default_settings';
+
 
 
 
@@ -51,11 +53,22 @@ function a11yProps(index) {
 
   
 
+
+
 const Settings = (props) => {
 
     const [open, setOpen] = useState(true);
     const [selected, setSelected] = useState(0);
 
+
+    useEffect(() => {
+        if (!open)
+            return;
+        
+        props.setCurrentSettings(props.unAppliedSettings);
+    }, [open])
+
+    
     return(
         <div style={{"position": "absolute", "right": 0, "bottom": 0, marginRight:"10px", marginBottom: "10px"}}>
 
@@ -104,7 +117,7 @@ const Settings = (props) => {
                             return (
                             <div style={{"marginTop": "10px"}}>
                                 <Typography variant="h5" gutterBottom>
-                                    <div style={{"color": "rgb(245, 0, 87)"}}>
+                                    <div className={"heading"} style={{"color": "white"}}>
                                         {setting.name}
                                     </div>
                                 </Typography>
@@ -122,47 +135,28 @@ const Settings = (props) => {
                                             case "range":
                                                 return (
                                                 <div style={{}}>
-                                                    <RangeSetting />
+                                                    <RangeSetting name={item.property}  unAppliedSettings={props.unAppliedSettings} setNewSettings={props.setUnApliedSettings} property={setting.property} range={setting.range} />
                                                 </div>
                                                 );
                                             case "select":
                                                 return (
                                                     <div style={{'float': "right"}}>
-                                                        <SelectSetting name={setting.name} values={setting.options} />
+                                                        <SelectSetting setting_name={setting.name} name={item.property} unAppliedSettings={props.unAppliedSettings} setNewSettings={props.setUnApliedSettings} property={setting.property} values={setting.options} />
                                                     </div>
                                                 );
                                             case "color":
                                                 return (
                                                     <div style={{"float": "right"}}>
-                                                        <ColorSelect width={200} height={100} />
+                                                        <ColorSelect name={item.property} unAppliedSettings={props.unAppliedSettings} setNewSettings={props.setUnApliedSettings} property={setting.property} width={200} height={100} />
                                                     </div>
                                                 );
                                         }
                                     })() }
                                     </div>
                                 </div>
-                                {/* <br></br>
-                                <br></br> */}
                                 <Divider  variant="inset" />
                             </div>)
-
-                            // switch (setting.type)
-                            // {
-                            //     case "range":
-                            //         return (
-                            //         <div>
-                            //             <Typography variant="h4" gutterBottom>
-                            //                 {setting.name}
-                            //             </Typography>
-                            //             <RangeSetting />)
-                            //         </div>
-                            //     case "select":
-                            //         return <SelectSetting values={setting.options} />
-                            // }
-
                         })}
-
-                        {/* Item {item.name} */}
                     </TabPanel>        
                 )
             }
@@ -171,11 +165,11 @@ const Settings = (props) => {
 
         </DialogContent>
         <DialogActions className="black">
-          <Button onClick={e => setOpen(false)} color="primary">
-            Disagree
+          <Button variant="contained" onClick={e => setOpen(false)} color="secondary">
+            CANCEL
           </Button>
-          <Button onClick={e => setOpen(false)} color="primary" autoFocus>
-            Agree
+          <Button variant="contained" onClick={e => setOpen(false)} color="primary" autoFocus>
+            APPLY
           </Button>
         </DialogActions>
       </Dialog>

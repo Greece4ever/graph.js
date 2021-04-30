@@ -130,6 +130,7 @@ ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
+  background-color: #181a1b !important;
   }
   
 
@@ -144,4 +145,19 @@ ul {
 
 .button1:hover {
   opacity: 0.5;
+}
+
+@media only screen and (max-width: 430px) {
+  .muted {
+    font-size: 10px;
+  }
+
+  .heading {
+    font-size: 14px;
+  }
+}
+
+.MuiSelect-root.MuiSelect-select.MuiSelect-selectMenu.MuiInputBase-input.MuiInput-input
+{
+  color: darkgrey;
 }
