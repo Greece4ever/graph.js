@@ -39,6 +39,7 @@ canvas { display:block; }
   margin:0; 
   padding:0;
   box-sizing: border-box;
+  
 
   /* firefox */
   scrollbar-color: #888 #2e2c2c;
@@ -102,6 +103,13 @@ canvas { display:block; }
   box-shadow: rgba(24, 26, 27, 0.8) 0px 0px 10px 2px, rgba(0, 0, 0, 0.8) 0px 0px 10px 2px !important;
 }
 
+.shadow-no-animation
+{
+  box-shadow: rgba(24, 26, 27, 0.8) 0px 0px 10px 2px, rgba(0, 0, 0, 0.8) 0px 0px 10px 2px !important;
+}
+
+
+
 .shadow:hover
 {
   opacity: 0.9;
@@ -113,7 +121,7 @@ canvas { display:block; }
 }
 
 .muted {
-  color: #4e4e4e;
+  color: #b5afa6;
   font-weight: 100;
   /* font-size: 20px; */
 }
@@ -124,3 +132,16 @@ ul {
   padding: 0;
   }
   
+
+.handle
+{
+  background-color: #5d4ea1;
+}
+
+.button1 {
+  opacity: 1;
+}
+
+.button1:hover {
+  opacity: 0.5;
+}

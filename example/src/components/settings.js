@@ -73,7 +73,7 @@ const Settings = (props) => {
                 }} />
             </Fab>
 
-      <Dialog
+      <Dialog 
 
         open={open}
         aria-labelledby="alert-dialog-title"
@@ -81,9 +81,8 @@ const Settings = (props) => {
 
         style={{"border": 0}}
       >
-        <DialogTitle className="black" id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
+        <DialogTitle style={{"color": "rgb(177, 176, 175)"}} className="black" id="alert-dialog-title">{"Canvas Settings"}</DialogTitle>
         <DialogContent  className="black" >
-            {/* <ColorSetting /> */}
 
             <AppBar position="static">
                 <Tabs style={{
@@ -105,7 +104,7 @@ const Settings = (props) => {
                             return (
                             <div style={{"marginTop": "10px"}}>
                                 <Typography variant="h5" gutterBottom>
-                                    <div style={{"color": "white"}}>
+                                    <div style={{"color": "rgb(245, 0, 87)"}}>
                                         {setting.name}
                                     </div>
                                 </Typography>
@@ -129,12 +128,12 @@ const Settings = (props) => {
                                             case "select":
                                                 return (
                                                     <div style={{'float': "right"}}>
-                                                        <SelectSetting values={setting.options} />
+                                                        <SelectSetting name={setting.name} values={setting.options} />
                                                     </div>
                                                 );
                                             case "color":
                                                 return (
-                                                    <div>
+                                                    <div style={{"float": "right"}}>
                                                         <ColorSelect width={200} height={100} />
                                                     </div>
                                                 );
