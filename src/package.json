@@ -1,6 +1,6 @@
 {
   "name": "graph2d.js",
-  "version": "0.0.9",
+  "version": "1.0.1",
   "description": "React Library for interactive navigation of graphs of 2d functions.",
   "author": "Greece4ever",
   "license": "MIT",

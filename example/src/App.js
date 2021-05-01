@@ -13,7 +13,10 @@ import {createDefaultSettings, settings_prototype} from './components/settings/d
 import AddIcon from '@material-ui/icons/Add';
 import { Button } from '@material-ui/core';
 
+import { RandomColorGenerator  } from './components/color'
+
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import { pow } from 'mathjs';
 
 let settings = [
   {"name" : "Functions"   , "property": "function"       },
@@ -31,6 +34,8 @@ function App() {
   const [functions, setFunctions] = useState([ [x => NaN, "red"]  ]);
   const [selected, setSelected] = useState(null);
   const [length, setLength] = useState(0);
+
+  const generator = new RandomColorGenerator();
 
   const [layerWidth, setLayerWidth] = useState(0);
 
@@ -120,7 +125,7 @@ function App() {
         <div style={{width: "100%", height: "calc(100% - 48px)", overflow: "auto"}}
         >
           {functions.map( 
-            (func, index) => <InputFunction key={index} selected={selected} setSelected={setSelected} length={length} functions={functions} setFunctions={setFunctions} index={index} />
+            (func, index) => <InputFunction generator={generator} color={generator.randomColorFromPallete()} key={index} selected={selected} setSelected={setSelected} length={length} functions={functions} setFunctions={setFunctions} index={index} />
           )}
         </div>
 
@@ -128,10 +133,11 @@ function App() {
       </div>    
     </Resizable>
 
-
-
     <div style={{float: 'none', overflow: "hidden", background: "red" }}>
-      <Graph2D canvasStyle={currentSettings} functions={functions} width={size[0]} height={size[1]} />
+      <Graph2D 
+      canvasStyle={currentSettings} 
+      functions={functions} 
+      width={size[0]} height={size[1]} />
 
     </div>
 

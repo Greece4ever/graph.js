@@ -8,95 +8,18 @@ import Tooltip from '@material-ui/core/Tooltip';
 const color_blue = "#2c5a84";
 const color_grey = "rgb(33 33 33)";
 
-const randomColor = () => {
-    let nums = [1, 2, 3];
-    nums = nums.map(i => Math.round(Math.random() * 255));
-    return `rgba(${nums.join(", ")})`;
-}
-
-function getRandomArbitrary(min, max) {
-    return Math.random() * (max - min) + min;
-}
-
-/**
- * Returns a random integer between min (inclusive) and max (inclusive).
- * The value is no lower than min (or the next integer greater than min
- * if min isn't an integer) and no greater than max (or the next integer
- * lower than max if max isn't an integer).
- * Using Math.round() will give you a non-uniform distribution!
- */
-function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-
-function HSVtoRGB(h, s, v) {
-    var r, g, b, i, f, p, q, t;
-    if (arguments.length === 1) {
-        s = h.s;
-        v = h.v; 
-        h = h.h;
-    }
-    i = Math.floor(h * 6);
-    f = h * 6 - i;
-    p = v * (1 - s);
-    q = v * (1 - f * s);
-    t = v * (1 - (1 - f) * s);
-    switch (i % 6) {
-        case 0: r = v; g = t; b = p; break;
-        case 1: r = q; g = v; b = p; break;
-        case 2: r = p; g = v; b = t; break;
-        case 3: r = p; g = q; b = v; break;
-        case 4: r = t; g = p; b = v; break;
-        case 5: r = v; g = p; b = q; break;
-    }
-    return {
-        r: Math.round(r * 255),
-        g: Math.round(g * 255),
-        b: Math.round(b * 255)
-    };
-}
-
-
-
-class RandomColorGenerator {
-    constructor()
-    {
-        this.pallete = [
-            "",
-            "#dd7776",
-            "#5c95cb",
-            "#4b9057",
-            "#ac94de",
-            "#dddddd",
-            "#bcbcbd",
-            "#5181ae",
-            "#9a302d",
-        ]
-
-        this.index = 0
-    }
-
-    randomBrightColor() {
-        let $ = HSVtoRGB(getRandomInt(0, 360) / 360, getRandomInt(60, 75) / 100, getRandomInt(70, 100) / 100 );
-        return `rgb(${$.r}, ${$.g}, ${$.b})`
-    }
-
-}
-
 
 
 let scope = {'ln': Math.log}
 
-let generator = new RandomColorGenerator();
 
 
 const InputFunction = (props) => {
     const [math_expr, setMathExpr] = useState("");
     const [color, setColor] = useState(color_grey);
-    const [functionColor, setFunctionColor] = useState( generator.randomBrightColor() );
+    const [functionColor, setFunctionColor] = useState(  
+        typeof props.color === "string" ? props.color : props.generator.randomBrightColor()
+     );
     const [field, setField] = useState(null);
     const [reload, setReload] = useState(null);
 
@@ -124,15 +47,9 @@ const InputFunction = (props) => {
                 setReload(Math.random());
             },
             onContentDidChange: (mf) => {
-
-                // let value = mf.getValue(  );
-                // value = value.replace(/([a-zA-Z])(\d+)/, "$1_{$2}")
-                // mf.setValue( value  );
                 setMathExpr( mf.getValue('ascii-math')
                 .replaceAll("⋅", "*")
-            
             )
-                
             }
         });
 

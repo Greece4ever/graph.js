@@ -4,6 +4,14 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+if (process.env.NODE_ENV.toLowerCase() !== "development")
+{
+  console.log   = function() {};
+  console.warn  = function() {};
+  console.error = function() {};
+  console.info  = function() {}  
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
