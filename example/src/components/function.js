@@ -102,7 +102,7 @@ const InputFunction = (props) => {
 
     const math_input = useRef();
 
-    const [error, setError] = useState("Undeclraed symbol 'x'.");
+    const [error, setError] = useState(false);
 
 
 
@@ -124,6 +124,10 @@ const InputFunction = (props) => {
                 setReload(Math.random());
             },
             onContentDidChange: (mf) => {
+
+                // let value = mf.getValue(  );
+                // value = value.replace(/([a-zA-Z])(\d+)/, "$1_{$2}")
+                // mf.setValue( value  );
                 setMathExpr( mf.getValue('ascii-math')
                 .replaceAll("⋅", "*")
             
@@ -146,11 +150,14 @@ const InputFunction = (props) => {
 
     useEffect(() => {
         try {
+            let expr = math_expr.trim();
+            if (expr.length == 0)
+                return;
 
-            let expr = math_expr;
             if (!expr.includes("=") )
                 expr = `f(x)=${expr}`;
 
+            // console.log("got to thos state", math_expr)
             let func = evaluate( expr, scope  );
             if (typeof func != "function")
                 return;
@@ -167,12 +174,12 @@ const InputFunction = (props) => {
 
             } catch(err2) {
                 setError(err2.message);
-                console.log("err2", err2.message)
+                // console.log("err2", err2.message)
                 return
             }
         } catch(err) {
             setError(err.message);
-            console.log("err1", err.message)
+            // console.log("err1", err.message)
             return
         
         }

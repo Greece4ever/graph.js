@@ -115,31 +115,12 @@ function App() {
             <AddIcon />
           </Button>
 
-          {/* <Button
-
-          onClick={() => {
-            if (!selected)
-              return;
-
-            setFunctions(prev => {
-              let f_copy = prev.map(i => i.slice());
-              console.log( prev)
-              f_copy.splice(selected, 1)
-              console.log(f_copy)
-              return f_copy;
-            })
-          }}
-          
-          style={{"position": "absolute", "right": 0, marginTop: "5px", color: "#f15e53"}} className="btn">
-            < DeleteForeverIcon />
-          </Button> */}
-
         </div>
 
         <div style={{width: "100%", height: "calc(100% - 48px)", overflow: "auto"}}
         >
           {functions.map( 
-            (func, index) => <InputFunction selected={selected} setSelected={setSelected} length={length} functions={functions} setFunctions={setFunctions} index={index} />
+            (func, index) => <InputFunction key={index} selected={selected} setSelected={setSelected} length={length} functions={functions} setFunctions={setFunctions} index={index} />
           )}
         </div>
 
