@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import Popover from '@material-ui/core/Popover'
 
 
-import { ColorPicker, useColor } from "react-color-palette";
+import { ColorPicker, toColor, useColor } from "react-color-palette";
 import "react-color-palette/lib/css/styles.css"
 ;
 import { Button } from "@material-ui/core";
@@ -34,16 +34,6 @@ export const ColorSelect = (props) => {
     const [color, setColor] = useColor("hex", "#121212");
     const [open, setOpen] = useState(false);
 
-
-    useEffect(() => {
-        props.setNewSettings(prev => {
-            let clone = deepClone2D(prev);
-            clone[props.name][props.property] = color.hex;
-            return clone;
-        })
-    }, [color])
-
-
     return (
     <div>
         <Button onClick={e => setOpen(true)} style={{"background": "#3f51b5"}}>
@@ -53,7 +43,7 @@ export const ColorSelect = (props) => {
             } } 
             
             style={{
-                "background": color.hex,
+                "background": props.unAppliedSettings[props.name][props.property],
                 }}>
 
             </Button>
@@ -101,10 +91,16 @@ export const ColorSelect = (props) => {
                 <div >
 
                     <div style={{position: "relative", border: "10px solid #1d1d1d", background: "#1d1d1d"}}>
-                    <ColorPicker width={props.width} height={props.height} color={color} 
+                    <ColorPicker width={props.width} height={props.height} 
+                    
+                    color={ toColor("hex", props.unAppliedSettings[props.name][props.property]) } 
                         
-                        onChange={e => {
-                            setColor(e);
+                        onChange={ value => {
+                            props.setNewSettings(prev => {
+                                let clone = deepClone2D(prev);
+                                clone[props.name][props.property] = value.hex;
+                                return clone;
+                            })                    
                         }}
                         
                         hideHSV dark />

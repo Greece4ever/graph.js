@@ -10,8 +10,10 @@ import "./App.css"
 import {createDefaultSettings, settings_prototype} from './components/settings/default_settings';
 
 
+import AddIcon from '@material-ui/icons/Add';
+import { Button } from '@material-ui/core';
 
-
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
 let settings = [
   {"name" : "Functions"   , "property": "function"       },
@@ -58,7 +60,6 @@ function App() {
 
 
   useEffect(() => {
-    console.log("function length", functions.length);
     setLength(functions.length);
   }, [functions])
 
@@ -107,41 +108,38 @@ function App() {
           // "borderRight": "none"
         }}>
 
-          <button onClick={() => {
+          <Button onClick={() => {
             setFunctions(prev => [...prev, [ x => NaN, "red" ] ])
           }} 
-          className="btn" style={{"position" : "absolute", left: 0, color: "#40648d"}}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-              <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-            </svg>
-          </button>
+           style={{"position" : "absolute", left: 0, color: "#40648d", marginTop: "5px"}}>
+            <AddIcon />
+          </Button>
 
-          <button onClick={() => {
-            console.log(selected);
+          {/* <Button
 
-            if (selected === null)
+          onClick={() => {
+            if (!selected)
               return;
-              
 
             setFunctions(prev => {
-              let copy_prev = prev.slice();
-              copy_prev.slice(selected, 1);
-              return copy_prev;
+              let f_copy = prev.map(i => i.slice());
+              console.log( prev)
+              f_copy.splice(selected, 1)
+              console.log(f_copy)
+              return f_copy;
             })
           }}
           
-          style={{"position": "absolute", "right": 0, color: "#f15e53"}} className="btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-trash-fill" viewBox="0 0 16 16">
-              <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
-            </svg>
-          </button>
+          style={{"position": "absolute", "right": 0, marginTop: "5px", color: "#f15e53"}} className="btn">
+            < DeleteForeverIcon />
+          </Button> */}
 
         </div>
 
         <div style={{width: "100%", height: "calc(100% - 48px)", overflow: "auto"}}
         >
           {functions.map( 
-            (func, index) => <InputFunction setSelected={setSelected} length={length} functions={functions} setFunctions={setFunctions} index={index} />
+            (func, index) => <InputFunction selected={selected} setSelected={setSelected} length={length} functions={functions} setFunctions={setFunctions} index={index} />
           )}
         </div>
 

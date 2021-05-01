@@ -57,7 +57,7 @@ function a11yProps(index) {
 
 const Settings = (props) => {
 
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState(0);
 
 
@@ -67,6 +67,10 @@ const Settings = (props) => {
         
         props.setCurrentSettings(props.unAppliedSettings);
     }, [open])
+
+    useEffect(() => {
+        props.setCurrentSettings(props.unAppliedSettings);
+    }, [props.unAppliedSettings])
 
     
     return(
@@ -165,11 +169,17 @@ const Settings = (props) => {
 
         </DialogContent>
         <DialogActions className="black">
-          <Button variant="contained" onClick={e => setOpen(false)} color="secondary">
+
+        <Button onClick={() => setOpen(false)} variant="contained" color="secondary">
             CANCEL
-          </Button>
-          <Button variant="contained" onClick={e => setOpen(false)} color="primary" autoFocus>
-            APPLY
+        </Button>
+
+
+          <Button onClick={() => {
+              props.setUnApliedSettings( createDefaultSettings(settings_prototype)  );
+              
+          }} variant="contained" color="primary" autoFocus>
+            Revert back to defaults
           </Button>
         </DialogActions>
       </Dialog>

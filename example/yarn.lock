@@ -5603,10 +5603,10 @@
   "resolved" "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.6.tgz"
   "version" "4.2.6"
 
-"graph2d.js@^0.0.8":
-  "integrity" "sha512-dO5vdqb+aKImhdel0cr9rbgoClcKCbpMf8QQr7VLhC2RCTZPyVKgsEUJpBkQU8sd9tF48e8qoJPe3cVswuEyLw=="
-  "resolved" "https://registry.npmjs.org/graph2d.js/-/graph2d.js-0.0.8.tgz"
-  "version" "0.0.8"
+"graph2d.js@^0.0.9":
+  "integrity" "sha512-zZkFbgoqvL4jy8tc/zEe6rpHR/4utslHAM7RA4W69nSUZ6rgGxN4YfIb+79uAqChIyCZL3ylGKbjY4whXIQLaQ=="
+  "resolved" "https://registry.npmjs.org/graph2d.js/-/graph2d.js-0.0.9.tgz"
+  "version" "0.0.9"
 
 "growly@^1.3.0":
   "integrity" "sha1-8QdIy+dq+WS3yWyTxrzCivEgwIE="

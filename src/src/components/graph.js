@@ -55,7 +55,7 @@ export const __plot_2d = (props) => {
 
     useEffect(() => {
         setCanvasStyle(() => props.canvasStyle ?? {});
-    }, [props])
+    }, [props.canvasStyle])
 
     useEffect(() => {
         if (!ctx)
@@ -72,7 +72,7 @@ export const __plot_2d = (props) => {
         drawPointForFunction();
         drawText(x_bounds, y_bounds);    
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [ctx, center, increment, add, mouseDownPoint, mouseDownFunction, props.functions])
+    }, [ctx, center, props.canvasStyle, increment, add, mouseDownPoint, mouseDownFunction, props.functions])
 
 
     // how to find the numbers in a sequence before and after a number
@@ -190,10 +190,22 @@ export const __plot_2d = (props) => {
         let color = _[1];
         ctx.strokeStyle = color;
         ctx.moveTo(toPixelsX(x_cords.start), toPixelsY(f(x_cords.start)))
-            for (let x=x_cords.start; x < x_cords.end; x += inc)
+        let move = false;
+        for (let x=x_cords.start; x < x_cords.end; x += inc)
             {
                 let [x_, y_] = [toPixelsX(x), toPixelsY( f(x) )]
-                ctx.lineTo(x_, y_ )
+                if (isNaN(y_))
+                {
+                    move = true;
+                    continue;
+                }
+                if (move)
+                {
+                    ctx.moveTo(x_, y_);
+                    move = false;
+                }
+                else
+                    ctx.lineTo(x_, y_ )
             }
     
         ctx.stroke();
