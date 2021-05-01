@@ -2,6 +2,7 @@
   "name": "example",
   "version": "1.0.1",
   "private": true,
+  "homepage": "https://greece4ever.github.io/graph.js/",
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
